@@ -1,9 +1,14 @@
-SRC = st2.c
+SRC := src/st2.c
+
+include arch/x86_64/arch.mk
+
 OBJ = $(patsubst %.c, %.o, $(SRC))
 
 TARG = kernel
 
-CFLAGS =  -Wall          \
+INCLUDE += -Iinclude
+
+CFLAGS := -Wall          \
           -Wextra        \
           -fno-pic       \
           -fpie          \
@@ -11,7 +16,7 @@ CFLAGS =  -Wall          \
           -nostdinc      \
           -ffreestanding \
           -nostdlib		 \
-		  -Iinclude
+		  $(INCLUDE)
 
 LDFLAGS = -Tlinker.ld    \
           -nostdlib      \
