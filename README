@@ -1,3 +1,7 @@
-# Crisix
+Crisix
 
-An operating system combining ideals of Unix and a microkernel architecture.
+An operating system combining principles of Unix with modern design.
+
+Features:
+    - A modern interface without legacy support
+    - Microkernel architecture

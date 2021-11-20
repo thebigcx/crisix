@@ -1,4 +1,4 @@
-SRC = main.c
+SRC = st2.c
 OBJ = $(patsubst %.c, %.o, $(SRC))
 
 TARG = kernel
@@ -10,7 +10,8 @@ CFLAGS =  -Wall          \
           -mno-red-zone  \
           -nostdinc      \
           -ffreestanding \
-          -nostdlib
+          -nostdlib		 \
+		  -Iinclude
 
 LDFLAGS = -Tlinker.ld    \
           -nostdlib      \
