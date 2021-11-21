@@ -20,3 +20,8 @@ FORCE_INLINE void lidt(struct desc *desc)
 {
     asm volatile ("lidt (%0)" :: "r"(desc));
 }
+
+FORCE_INLINE void lcr3(uintptr_t cr3)
+{
+    asm volatile ("mov %0, %%cr3" :: "r"(cr3));
+}
