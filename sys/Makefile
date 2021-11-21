@@ -1,8 +1,9 @@
-SRC := src/st2.c
+SRC := src/st2.c \
+       src/debug.c
 
 include arch/x86_64/arch.mk
 
-OBJ = $(patsubst %.c, %.o, $(SRC))
+OBJ = $(patsubst %.c, %.o, $(patsubst %.s, %.o, $(SRC)))
 
 TARG = kernel
 
@@ -15,8 +16,9 @@ CFLAGS := -Wall          \
           -mno-red-zone  \
           -nostdinc      \
           -ffreestanding \
-          -nostdlib		 \
-		  $(INCLUDE)
+          -nostdlib      \
+          -g             \
+          $(INCLUDE)
 
 LDFLAGS = -Tlinker.ld    \
           -nostdlib      \
@@ -38,5 +40,9 @@ $(TARG): $(OBJ)
 	@echo "    CC $@"
 	@$(CC) -o $@ -c $< $(CFLAGS)
 
-clean:	
-	rm -f $(OBJ) $(TARG)    
+%.o: %.s
+	@echo "    AS $@"
+	@$(CC) -o $@ -c $< $(CFLAGS)
+
+clean:
+	rm -f $(OBJ) $(TARG)

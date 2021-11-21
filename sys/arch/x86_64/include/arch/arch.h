@@ -1,6 +1,5 @@
 #pragma once
 
-struct cpu
-{
+#include <arch/desc.h>
+#include <arch/cpu.h>
 
-};
