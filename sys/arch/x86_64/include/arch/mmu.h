@@ -34,5 +34,13 @@ struct vm_map
 
 void kmap_init();
 
-void* vmalloc(size_t n);
+void *vmalloc(size_t n);
 void vfree(void *ptr, size_t n);
+
+void vkmmap(void *vaddr, void *paddr, size_t n, int flags);
+
+void init_pmm();
+
+void *pmalloc(size_t n);
+void *pamalloc(void *ptr, size_t n);
+void pfree(void *ptr, size_t n);

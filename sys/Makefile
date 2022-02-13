@@ -9,15 +9,17 @@ TARG = kernel
 
 INCLUDE += -Iinclude
 
-CFLAGS := -Wall          \
-          -Wextra        \
-          -fno-pic       \
-          -fpie          \
-          -mno-red-zone  \
-          -nostdinc      \
-          -ffreestanding \
-          -nostdlib      \
-          -g             \
+CFLAGS := -Wall                                 \
+          -Wextra                               \
+          -Werror=implicit-function-declaration \
+          -Werror=return-type                   \
+          -fno-pic                              \
+          -fpie                                 \
+          -mno-red-zone                         \
+          -nostdinc                             \
+          -ffreestanding                        \
+          -nostdlib                             \
+          -g                                    \
           $(INCLUDE)
 
 LDFLAGS = -Tlinker.ld    \

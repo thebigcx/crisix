@@ -2,6 +2,8 @@
 
 #include <sys/platform.h>
 
+struct desc;
+
 void lgdt_full(struct desc*, uint16_t, uint16_t);
 
 FORCE_INLINE void ltr(uint16_t tr)

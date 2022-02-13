@@ -7,9 +7,10 @@ static pml_t kpml4 PAGEALIGN;
 static pml_t kpdpt PAGEALIGN;
 static pml_t kpd   PAGEALIGN;
 
-static pml_t kheapd          PAGEALIGN;
-static pml_t kheapts[PMLCNT] PAGEALIGN;
+static pml_t kheapd          PAGEALIGN; // Heap Directory
+static pml_t kheapts[PMLCNT] PAGEALIGN; // Heap Tables
 
+// Start of kernel heap
 #define HEAPBASE 0xffffffffc0000000
 
 // Standard kernel page map level
@@ -75,4 +76,54 @@ void vfree(void *ptr, size_t n)
 
     for (uintptr_t i = a; i < a + n; i++)
         kheapts[i / 512][i % 512] = 0;
+}
+
+// Map kernel memory
+void vkmmap(void *vaddr, void *paddr, size_t n, int flags)
+{
+    uintptr_t v = (uintptr_t)vaddr - HEAPBASE;
+    uintptr_t p = (uintptr_t)paddr & ~0xfff; // Assure alignment
+
+    for (uintptr_t i = v; i < v + n; i++)
+        kheapts[i / 512][i % 512] |= (p + n * PAGE_SIZE) | flags;
+}
+
+#define BMLEN 262144
+static uint64_t bitmap[BMLEN];
+
+// Initialize Physical Memory Manager
+void init_pmm()
+{
+    memset(bitmap, 0, BMLEN * sizeof(uint64_t));
+}
+
+// Allocate physical memory of length 'n' pages
+void *pmalloc(size_t n)
+{
+    size_t found = 0;
+    for (size_t i = 0; i < BMLEN; i++)
+    {
+        found = bitmap[i / 64] & (1 << (i % 64)) ? 0 : found + 1;
+        if (found == n)
+            return pamalloc((void*)((i + 1 - found) * PAGE_SIZE), n);
+    }
+
+    return NULL;
+}
+
+// Allocate physical memory at an address
+void *pamalloc(void *ptr, size_t n)
+{
+    uintptr_t start = (uintptr_t)ptr / PAGE_SIZE;
+    while (n--)
+        bitmap[(start + n) / 64] |= (1 << ((start + n) % 64));
+
+    return ptr;
+}
+
+void pfree(void *ptr, size_t n)
+{
+    uintptr_t start = (uintptr_t)ptr / PAGE_SIZE;
+    while (n--)
+        bitmap[(start + n) / 64] &= ~(1 << ((start + n) % 64));
 }
