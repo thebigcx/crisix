@@ -27,3 +27,15 @@ FORCE_INLINE void lcr3(uintptr_t cr3)
 {
     asm volatile ("mov %0, %%cr3" :: "r"(cr3));
 }
+
+FORCE_INLINE uintptr_t rdmsr(unsigned int msr)
+{
+    uint32_t lo, hi;
+    asm volatile ("rdmsr" : "=d"(hi), "=a"(lo) : "c"(msr));
+    return ((uintptr_t)hi << 32) | (uintptr_t)lo;
+}
+
+FORCE_INLINE void wrmsr(unsigned int msr, uintptr_t val)
+{
+    asm volatile ("wrmsr" :: "a"(val & 0xffffffff), "d"(val >> 32), "c"(msr));
+}

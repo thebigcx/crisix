@@ -4,3 +4,4 @@
 #include <arch/cpu.h>
 #include <arch/mmu.h>
 #include <arch/pio.h>
+#include <arch/lapic.h>

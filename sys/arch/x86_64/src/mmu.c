@@ -81,7 +81,7 @@ void vfree(void *ptr, size_t n)
 // Map kernel memory
 void vkmmap(void *vaddr, void *paddr, size_t n, int flags)
 {
-    uintptr_t v = (uintptr_t)vaddr - HEAPBASE;
+    uintptr_t v = ((uintptr_t)vaddr - HEAPBASE) / PAGE_SIZE;
     uintptr_t p = (uintptr_t)paddr & ~0xfff; // Assure alignment
 
     for (uintptr_t i = v; i < v + n; i++)

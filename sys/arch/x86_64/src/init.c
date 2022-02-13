@@ -7,6 +7,8 @@ void arch_init()
     kmap_init();
     init_pmm();
 
+    lapic_setup();
+
     void *ptr = vmalloc(16);
     
     vfree(ptr, 16);
@@ -16,6 +18,7 @@ void arch_init()
     
     vkmmap(ptr, phys, 16, MMU_PR);
 
+    dbgprintf("ptr: %d\n", ptr);
     *((uint32_t*)ptr) = 0xdeadbeef;
 
     void *phys2 = pmalloc(16);
