@@ -101,13 +101,20 @@ void send_eoi()
 void lapic_setup()
 {
     mmio_base = (uintptr_t)vmalloc(1);
-    vkmmap((void*)mmio_base, (void*)get_base(), 1, MMU_PR | MMU_NOCACHE | MMU_WTHRU);
+    vkmmap((void*)mmio_base, (void*)get_base(), 1, MMU_PR | MMU_RW | MMU_NOCACHE | MMU_WTHRU);
     
     lapic_enable();
+
+    asm ("int $0x20");
 }
 
 void lapic_enable()
 {
     set_base(get_base() | (1 << 11));
     write(R_SIVR, read(R_SIVR) | 0x1ff);
+}
+
+void intr_init()
+{
+    lapic_setup();
 }

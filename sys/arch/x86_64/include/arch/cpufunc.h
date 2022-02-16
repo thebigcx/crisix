@@ -39,3 +39,8 @@ FORCE_INLINE void wrmsr(unsigned int msr, uintptr_t val)
 {
     asm volatile ("wrmsr" :: "a"(val & 0xffffffff), "d"(val >> 32), "c"(msr));
 }
+
+FORCE_INLINE void invlpg(uintptr_t pg)
+{
+    asm volatile ("invlpg (%0)" :: "r"(pg));
+}

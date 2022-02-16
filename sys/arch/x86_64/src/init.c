@@ -1,13 +1,17 @@
 #include <sys/arch.h>
 #include <sys/debug.h>
 
+// TEMP
+#include <arch/ioapic.h>
+
 void arch_init()
 {
     init_cpu_descs(&g_cpus[0]);
     kmap_init();
     init_pmm();
 
-    lapic_setup();
+    intr_init();
+    ioapic_init(0xfec00000);
 
     void *ptr = vmalloc(16);
     
@@ -23,5 +27,8 @@ void arch_init()
 
     void *phys2 = pmalloc(16);
     dbgprintf("Phys: %d\n", phys2);
-    //for(;;);
+    
+
+    asm ("sti");
+    for(;;);
 }

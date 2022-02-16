@@ -85,7 +85,10 @@ void vkmmap(void *vaddr, void *paddr, size_t n, int flags)
     uintptr_t p = (uintptr_t)paddr & ~0xfff; // Assure alignment
 
     for (uintptr_t i = v; i < v + n; i++)
+    {
         kheapts[i / 512][i % 512] |= (p + n * PAGE_SIZE) | flags;
+        invlpg(i * PAGE_SIZE + HEAPBASE);
+    }
 }
 
 #define BMLEN 262144
