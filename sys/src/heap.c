@@ -1,6 +1,8 @@
 #include <sys/heap.h>
 #include <sys/libk.h>
 
+#include <arch/arch.h>
+
 struct blck
 {
     struct blck *next, *prev;
@@ -9,17 +11,12 @@ struct blck
 };
 
 static struct blck *s_head = NULL;
-
-// Expand the heap, allocate pages
-static size_t expand(size_t n)
-{
-    return n;
-}
+static size_t s_size = 0;
 
 // Split a block into two
 static struct blck *split(struct blck *b, size_t n)
 {
-    struct blck* new = (struct blck*)((uintptr_t)b + sizeof(struct blck) + n);
+    struct blck* new = (struct blck*)((uintptr_t)(b + 1) + n);
    
     // Set the data
     new->free = 1;
@@ -53,12 +50,49 @@ static struct blck *combine(struct blck *b1, struct blck *b2)
     return b1;
 }
 
+// Expand the heap, allocate pages
+static void expand(size_t n)
+{
+    // Last block, if no blocks yet then equal to NULL
+    struct blck *last;
+    for (last = s_head; last && last->next; last = last->next);
+
+    // Initialize heap if necessary
+    if (!s_head)
+        s_head = (struct blck*)0xffffffffd0000000;
+
+    if (n % PAGE_SIZE)
+        n += PAGE_SIZE - (n % PAGE_SIZE);
+
+    for (size_t i = 0; i < n; i += PAGE_SIZE)
+        vkmmap((void*)((uintptr_t)s_head + s_size + i), pmalloc(1), 1, MMU_PR | MMU_RW);
+
+    // Create and initialize new block
+    struct blck *new = (struct blck*)((uintptr_t)s_head + s_size);
+
+    new->prev = last;
+    new->next = NULL;
+    new->size = n;
+    new->free = 1;
+
+    // Combine backward if possible
+    if (new->prev)
+    {
+        new->prev->next = new;
+        if (new->prev->free) new = combine(new->prev, new);
+    }
+
+    s_size += n;
+}
+
 // Allocate kernel heap memory
 void *malloc(size_t size)
 {
     if (!size) return NULL;
 
-    size |= 31; // 32-byte alignment
+    // 32-byte alignment
+    if (size % 32)
+        size += 32 - (size % 32);
 
     for (struct blck *b = s_head; b; b = b->next)
     {
@@ -77,7 +111,8 @@ void *malloc(size_t size)
         }
     }
 
-    return malloc(expand(size));
+    expand(size);
+    return malloc(size);
 }
 
 // Allocate memory and zero it

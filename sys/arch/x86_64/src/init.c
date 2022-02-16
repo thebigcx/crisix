@@ -33,5 +33,5 @@ void arch_init()
     
 
     asm ("sti");
-    for(;;);
+    //for(;;);
 }
