@@ -3,6 +3,7 @@
 
 // TEMP
 #include <arch/ioapic.h>
+#include <arch/pic.h>
 
 void arch_init()
 {
@@ -10,10 +11,11 @@ void arch_init()
     kmap_init();
     init_pmm();
 
-    intr_init();
-    ioapic_init(0xfec00000);
+    //intr_init();
+    //ioapic_init(0xfec00000);
+    pic_init();
 
-    void *ptr = vmalloc(16);
+    /*void *ptr = vmalloc(16);
     
     vfree(ptr, 16);
 
@@ -26,7 +28,8 @@ void arch_init()
     *((uint32_t*)ptr) = 0xdeadbeef;
 
     void *phys2 = pmalloc(16);
-    dbgprintf("Phys: %d\n", phys2);
+    dbgprintf("Phys: %d\n", phys2);*/
+    //send_eoi();
     
 
     asm ("sti");

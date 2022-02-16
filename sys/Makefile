@@ -1,5 +1,6 @@
-SRC := src/st2.c \
-       src/debug.c
+SRC := src/st2.c   \
+       src/debug.c \
+       src/heap.c
 
 include arch/x86_64/arch.mk
 

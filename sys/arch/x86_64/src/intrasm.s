@@ -87,7 +87,7 @@ irq\num:
     movq    %rsp, %rsi
     xor     %rdx, %rdx
     xor     %rbp, %rbp
-    #call    irq_handler
+    call    irq_handler
     popaq
     iretq
 

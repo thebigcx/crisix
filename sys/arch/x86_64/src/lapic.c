@@ -104,8 +104,6 @@ void lapic_setup()
     vkmmap((void*)mmio_base, (void*)get_base(), 1, MMU_PR | MMU_RW | MMU_NOCACHE | MMU_WTHRU);
     
     lapic_enable();
-
-    asm ("int $0x20");
 }
 
 void lapic_enable()
